@@ -1,0 +1,126 @@
+experience_name: apibench
+variant_name: test_variant
+extra_info: ''
+output_root: core/experiments
+repo_id: huggyllama/llama-7b
+retriever: null
+system_prompt: ''
+system_prompt_format: gorilla_prompt
+epochs: 5
+batch_size: 16  # Reduced for Phase 1 memory efficiency
+grad_accum: 8   # Increased to maintain effective batch size (16*8=128 vs 32*4=128)
+lr: 0.0005
+max_length: 256
+max_grad_norm: 1.0
+packing: false
+group_by_length: true
+completion_only_loss: true
+label_smoothing: 0.05
+lora_r: 32
+lora_alpha: 64
+lora_dropout: 0.05
+target_modules:
+- q_proj
+- k_proj
+- v_proj
+- o_proj
+- gate_proj
+- down_proj
+- up_proj
+resume_from: null
+lora_adapters: []
+early_stopping_patience: 3
+early_stopping_threshold: 0.01
+no_validation: true
+hyperparameters_search: false
+eval_at_step0: false  # Run evaluation immediately after loading checkpoint but before training (global_step==0)
+weight_decay: 0.001
+warmup_steps: 10
+lr_scheduler_type: linear
+optim: adamw_torch
+logging_steps: 5
+save_strategy: epoch
+save_total_limit: 1
+metric_for_best_model: eval_loss
+greater_is_better: false
+activation_checkpointing: true
+low_memory_mode: true  # Enable for Phase 1 memory efficiency (offloads activations to CPU)
+use_quantization: false
+replay_strategy: null
+replay_min_per_domain: 5
+replay_max_per_domain: null
+replay_max_per_model: 3
+replay_embedding_source: flagembedding
+replay_percentage: 0.0
+loss_mode: supervised+router
+router_loss_weight: 1.0
+lm_loss_weight: 1.0
+router_embedding_dim: 1024
+router_tau: 0.08
+router_pooling: last_token
+router_proj_lr: 3e-4
+router_embedding_lr: 5e-5
+router_K_total: 64
+router_K_semantic: 38
+router_K_far: 10
+router_K_hard: 15
+router_mine_every_steps: 100
+router_K_hard_pool: 50
+router_semantic_pool_size: 1024
+router_max_pool_size: 2048
+router_semantic_pool_mode: parent_group
+router_semantic_pool_max_domains: 8
+router_semantic_pool_depth: 1
+router_use_soft_targets: true
+router_soft_target_eps: 0.02
+router_soft_target_k_neighbors: 10
+router_use_label_graph_reg: false
+router_label_graph_lambda: 0.1
+router_label_graph_tau: 0.07
+router_label_graph_tau_target: 0.1
+router_label_graph_max_models: 256
+router_label_graph_alpha_domain: 0.5
+semantic_batching: true
+domains_per_batch: 2
+router_registry_path: null
+router_registry_init_mode: fresh  # "fresh" or "extend" - default is "extend"
+#router_registry_base_path: core/experiments/apibench-router_test/checkpoint-310/model_registry.json  # Path to previous registry JSON (e.g., "core/experiments/apibench-D_tau008_seed40/checkpoint-310/model_registry.json")
+# Two-phase training schedule (for Experience 2+ to reduce forgetting)
+router_two_phase_enable: false  # Enable two-phase schedule (Phase 1: stability warmup, Phase 2: main training)
+router_phase1_frac: 0.4  # Fraction of total steps for Phase 1 (stability warmup)
+router_phase1_loss_mode: router  # Loss mode for Phase 1 (typically "router" for router-only)
+router_phase1_replay_ratio: null  # Replay ratio override for Phase 1 (None = use default)
+router_phase1_router_loss_weight: 1.0  # Router loss weight for Phase 1
+router_phase1_lm_loss_weight: 0.0  # LM loss weight for Phase 1 (0.0 ensures LM is frozen)
+router_phase1_proj_lr: 1e-4  # Router projection LR for Phase 1 (conservative)
+router_phase1_embedding_lr: 5e-5  # Router embedding LR for Phase 1 (conservative)
+router_phase1_use_soft_targets: false  # Soft targets for Phase 1 (or true with eps below)
+router_phase1_soft_target_eps: 0.02  # Soft target epsilon for Phase 1
+router_replay_loss_multiplier: 5.0  # Multiplier for router loss on replay examples (applied in Phase 1 if >1.0)
+# Exp1-preservation training mode (for exp2 to reduce catastrophic forgetting)
+router_exp1_preservation_enable: false  # Enable exp1-preservation mode (freeze old embeddings during Phase 1, keep projection trainable)
+router_exp1_preservation_M_old: 852  # Base registry size from exp1 (auto-detected from checkpoint if null, or set manually)
+
+
+
+router_anchor_enable: false          # Enable embedding anchoring (default: false)
+router_anchor_lambda: 10000.0          # Weight for anchor loss (lambda in total_loss += lambda * anchor_loss)
+router_anchor_mode: "normalized"     # Anchor mode: "raw" (L2) or "normalized" (cosine, preferred for router scoring)
+router_anchor_apply_phase: "phase1" # When to apply anchoring: "phase1", "phase2", or "both"
+router_anchor_scope: "all_old"      # Which rows to anchor: "all_old" (all rows < M_old) or "touched" (only rows in current step's candidates + gold)
+router_anchor_M_old: null     
+
+
+router_proj_anchor_enable: false     # Enable projection anchoring (default: false)
+router_proj_anchor_lambda: 50000.0      # Weight for projection anchor loss (lambda in total_loss += lambda * proj_anchor_loss)
+router_proj_anchor_apply_phase: "phase1"  # When to apply projection anchoring: "phase1", "phase2", or "both"
+
+router_ewc_enable: false           # Enable EWC on projection + embedding layers
+router_ewc_lambda: 10000.0         # Regularization strength (ewc_loss = ewc_lambda * Σ F*(θ-θ*)²)
+router_ewc_mode: "online"          # "online" (recommended, constant memory) or "separate"
+router_ewc_decay_factor: 0.9       # Exponential decay for online consolidation
+router_ewc_apply_phase: "phase1"   # "phase1", "phase2", or "both"
+router_ewc_fisher_samples: null    # null = use all training samples for Fisher computation
+router_ewc_fisher_batch_size: 4    # Batch size for Fisher computation (smaller = less GPU memory)
+
+router_freeze_lm: false              # Force LM requires_grad=False in router-only mode (default: false)

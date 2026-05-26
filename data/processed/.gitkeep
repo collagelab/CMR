@@ -1,0 +1,2 @@
+# This file ensures that the processed data directory is preserved in git
+# Processed data files will be ignored by .gitignore but the directory will remain 

@@ -1,0 +1,10 @@
+vllm==0.10.2
+transformers==4.56.1
+huggingface-hub==0.35.1
+numpy==2.2.6
+pandas==2.3.2
+scikit-learn==1.7.2
+python-dotenv==1.1.1
+jupyter
+ipykernel
+Levenshtein==0.27.1

@@ -1,0 +1,43 @@
+# Evaluation Configuration
+# This file contains the default parameters for the EvalConfig class
+
+# Model and experiment identifiers
+experience_names: ["apibench", "mllm", "hugging-bench-1", "hugging-bench-2"]  # list of name of the experience, e.g., ["apibench", "mllm"] or ["apibench"]
+
+# ORDERED list of LoRA adapters to use by experience or null. 
+# For "rat-frozen" experiments (using the same adapter forzen after first experience), use the same adapter path multiple times
+# e.g., ["apibench-only-hf/checkpoint-1040", "apibench-only-hf/checkpoint-1040", "apibench-only-hf/checkpoint-1040"] one for each experience
+# For "joint training" also use the same adapter path multiple times
+# SET THIS TO NULL if "retrievers_only" mode is used
+lora_adapters: ["apibench-test-ewc-online-10000000-lambda", "mllm-test-ewc-online-10000000-lambda", "hugging-bench-1-test-ewc-online-10000000-lambda", "hugging-bench-2-test-ewc-online-10000000-lambda"]
+
+variant_name: "ewc-online-10000000-lambda"  # variant name for the output directory
+# list of retriever if needed, e.g., ["bm25", "sentence_transformer"], ["splade"], null
+retrievers: null 
+oracle: false
+
+# if using retrievers, specify an ORDERED list of model index to use on each experience 
+#e.g. ["e1", "e1_e2", "e1_e2_e3", "e1_e2_e3_e4"], [e1], [e1_e2] choices: "e1", "e1_e2", "e1_e2_e3", "e1_e2_e3_e4", null
+model_indices: null  
+
+repo_id: "huggyllama/llama-7b"  # base model to use "huggyllama/llama-7b" "Qwen/Qwen2.5-7B"
+
+# Input/Output settings
+input_max_length: 256
+max_new_tokens: 128
+temperature: 0.35  # Lower temperature for more conservative predictions
+do_sample: true
+
+# Evaluation settings
+eval_batch_size: 40 # 32 if no retriever, 8 with retriever
+top_k: 10
+top_p: 0.7 
+
+# LoRA merging strategy settings
+lora_merging_strategy: null  # ties, dare_linear, arithmetic_mean, or null
+weights: [1.0, 1.0, 1.0, 1.0]  # used only when lora_merging_strategy is "ties" or "dare_linear"
+density: 0.3  
+
+
+# eval on training data
+eval_on_train: false

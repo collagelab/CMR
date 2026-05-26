@@ -1,0 +1,84 @@
+# Training Configuration
+# This file contains the default parameters for the TrainConfig class
+
+# Model and experiment identifiers
+experience_names: ["apibench", "mllm", "hugging-bench-1", "hugging-bench-2"]  # ORDERED list of experiences, e.g., ["apibench", "mllm", "hugging-bench-1"] or ["apibench"]
+variant_name: "test"  # variant name for the experiment
+extra_info: ""  # any extra info to append to the output directory name
+output_path: "core/baselines/experiments"  # root directory for output
+mode: "replay" # training mode, choices: "replay", "sequential-finetuning", "joint-training", "merging", "ewc"
+
+
+repo_id: "huggyllama/llama-7b"  # base model to use e.g., "huggyllama/llama-7b", "Qwen/Qwen3-4B"
+retriever: null  # specify retriever if needed, e.g., "bm25", "sentence_transformer", "splade", "flagembedding", "null"
+# if using retrieval, specify which model_indices to use choices: "e1", "e1_e2", "e1_e2_e3", "e1_e2_e3_e4", "null"
+# if multiple experiences are provided, specify a list of model_indices corresponding to each experience e.g., ["e1", "e1_e2"]
+model_indices: null  
+
+# Training hyperparameters
+epochs: 5
+batch_size: 32  # Reduced from 4 to reduce memory usage
+grad_accum: 4  # Increased from 32 to maintain similar effective batch size (2*64=128 vs 4*32=128)
+lr: 0.0005
+max_length: 256 # set to 1100 if you are using retrieval, otherwise 256 is sufficient for most tasks and will reduce memory usage
+max_grad_norm: 1.0
+packing: false
+group_by_length: true
+completion_only_loss: true
+label_smoothing: 0.05
+
+# LoRA parameters
+lora_r:  32
+lora_alpha: 64  # typically 2 * lora_r (64)
+lora_dropout: 0.05 
+target_modules: ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'down_proj', 'up_proj']
+
+# Checkpoint and evaluation options
+resume_from: null  # path to checkpoint to resume from a previous training run
+lora_adapters: []  # list of LoRA adapters to use
+early_stopping_patience: 3  # check we are not overfitting
+early_stopping_threshold: 0.01
+no_validation: true  # set to true to merge training and validation set during training
+hyperparameters_search: false  # set to true when executing bayes_hyperparameter_search.py, this will evaluate the model after training
+
+# Optimizer and scheduler
+weight_decay: 0.001
+warmup_steps: 10
+lr_scheduler_type: "linear"  # choices: linear, cosine, cosine_with_restarts, polynomial, constant, constant_with_warmup
+optim: "adamw_torch"
+logging_steps: 10
+save_strategy: "epoch"
+save_total_limit: 1
+metric_for_best_model: "eval_loss"
+greater_is_better: false
+
+activation_checkpointing: true
+
+# Memory optimization options
+# When true, enables Flash Attention 2 (if available), activation offloading to CPU, and bfloat16 (bf16) precision to reduce GPU memory usage.
+low_memory_mode: false  # Enable flash-attn + activation offload + bf16
+use_quantization: false # use 4bit quantization
+
+# replay configuration for continual learning
+replay_percentage: 0.1
+replay_num_samples: null
+
+# EWC (Elastic Weight Consolidation) configuration 
+ewc_fisher_samples: null  # Number of samples to compute Fisher Information Matrix
+                          # null = use all training samples (slower but more accurate)
+                          # 200-1000 is usually sufficient for good approximation
+
+ewc_fisher_batch_size: 4  # Batch size for Fisher computation (smaller = less memory usage)
+                          # null = use the same batch_size as training
+                          # Recommended: 4-8 for large models to avoid OOM during Fisher computation
+
+
+ewc_lambda: 25000.0
+ewc_mode: "online" 
+ewc_decay_factor: 0.9
+
+
+# LwF-specific parameters
+alpha: 1.0
+temperature: 2.0
+kd_on_new: false

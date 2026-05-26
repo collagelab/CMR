@@ -1,0 +1,30 @@
+cff-version: 1.0.0
+title: "Continual Model Routing in Evolving Model Hubs"
+authors:
+  - family-names: Bell
+    given-names: Jack
+  - family-names: Carfi
+    given-names: Giacomo
+  - family-names: Gramaglia
+    given-names: Gerlando
+  - family-names: Lomonaco
+    given-names: Vincenzo
+message: "If you used CMR in your research project, please remember to cite our paper."
+preferred-citation:
+  authors:
+    - family-names: Bell
+      given-names: Jack
+    - family-names: Carfi
+      given-names: Giacomo
+    - family-names: Gramaglia
+      given-names: Gerlando
+    - family-names: Lomonaco
+      given-names: Vincenzo
+  
+  title: "Continual Model Routing in Evolving Model Hubs"
+  type: proceedings
+  year: 2026
+  conference:
+    name: "Forty-third International Conference on Machine Learning"
+  publisher:
+    name: "Proceedings of the International Conference on Machine Learning"

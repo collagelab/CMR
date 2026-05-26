@@ -1,0 +1,42 @@
+# Evaluation Configuration
+# This file contains the default parameters for the EvalConfig class
+
+# Model and experiment identifiers
+experience_name: "apibench"  # name of the experience, e.g., "apibench" "mllm" "hugging-bench-1" "hugging-bench-2"
+lora_adapters: ["apibench-jack-no-val-new-apibench/checkpoint-310", "mmlm-jack-no-val-new-mmlm/checkpoint-180"]  # list of LoRA adapters to use
+repo_id: "huggyllama/llama-7b"  # base model to use "huggyllama/llama-7b" "deepseek-ai/deepseek-coder-7b-instruct-v1.5"
+
+### system prompt format:
+# gorilla_prompt: standard gorilla prompt with no explanation, predict only the model_name
+# gorilla_prompt_explanation: gorilla prompt with explanation using gorilla format <<<model_name>>>:my_model <<<explanation>>>:my_explanation
+# gorilla_prompt_explanation_json: gorilla prompt with explanation in json format {"model_name": "my_model", "explanation": "my_explanation"}
+system_prompt_format: gorilla_prompt  # specify system prompt format if needed, e.g., "gorilla_prompt", "gorilla_prompt_explanation", "gorilla_prompt_explanation_json"
+
+
+
+# Input/Output settings
+input_max_length: 1024
+max_new_tokens: 128
+temperature: 0.35  # Lower temperature for more conservative predictions
+do_sample: true
+
+output_name: null # Name of the directory to save the evaluation results
+
+# Evaluation settings
+eval_batch_size: 38
+
+# LoRA merging strategy settings
+lora_merging_strategy: "ties"  # ties, dare_linear, arithmetic_mean, or null
+ties_or_dare_weights: [1.0, 1.0]  # use only when lora_merging_strategy is "ties" or "dare_linear"
+ties_or_dare_density: 0.3  
+
+retriever: null  # specify retriever if needed, e.g., "bm25", "sentence_transformer", "splade", "flagembedding"
+
+# Commented out parameters (uncomment and adjust as needed)
+# max_len: 512
+#penalty_alpha: 0.6
+top_k: 10
+top_p: 0.7 
+# random_prefix_len: 5
+#sample_num: 2
+# decoding_method: "sampling"
