@@ -1,7 +1,7 @@
 # Continual Model Routing in Evolving Model Hubs
 
 <p align="center">
-  <a href="https://arxiv.org/"><img src="https://img.shields.io/badge/ArXiv-Paper-brown" alt="Paper"></a>
+  <a href="https://arxiv.org/abs/2605.28577"><img src="https://img.shields.io/badge/ArXiv-Paper-brown" alt="Paper"></a>
   <a href="https://github.com/collagelab/CMR/"><img src="https://img.shields.io/badge/GitHub-Code-orange" alt="Code"></a>
   <a href="https://www.vincenzolomonaco.com/collage-lab"><img src="https://img.shields.io/badge/Project-Page-purple" alt="Lab"></a>
 </p>
